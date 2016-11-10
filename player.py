@@ -6,12 +6,28 @@ import config
 import sys
 import os
 from utils import getch
+import threading
+import time
 
-query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token={}'.format(config.owner_id, config.token)
+def wrapper(func, res):
+    res.append(func())
 
-r = requests.post(query)
+def get_tracks():
+	query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token={}'.format(config.owner_id, config.token)
+	r = requests.post(query)
+	return  [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:]]
 
-all_tracks = [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:]]
+res = []
+thread = threading.Thread(target=wrapper, args=(get_tracks, res))
+thread.start()
+
+while thread.isAlive():
+	for x in '-\|/':  
+		b = 'Loading ' + x
+		print (b, end='\r')
+		time.sleep(0.1)
+
+all_tracks = res[0]
 
 pointer = 0
 while True:
@@ -34,5 +50,6 @@ while True:
 			tmp.kill()
 			sys.exit()
 			break
+		if x == 0: break
 
 	pointer += 1
