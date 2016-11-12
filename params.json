@@ -1,0 +1,6 @@
+{
+  "name": "VK-player",
+  "tagline": "Cli player for vk.com",
+  "body": "# vk-player\r\nCli player for vk.com\r\n\r\n1. Open `config.py` and add user ID and full path to ffplay(or ignore path if you have alias in terminal)\r\n2. Run `player.py`\r\n3. Enjoy!\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
