@@ -43,8 +43,8 @@ pointer = 0
 while True:
 	track = all_tracks[pointer]
 	tmp = subprocess.Popen(['{}ffplay'.format(config.ffmpeg_path), '-nodisp', '-autoexit', track[3]], stderr=open(os.devnull, 'wb'))
-	print('{}\n{} - {} [{}:{}]'.format('~'*20, track[0], track[1], track[2][0], track[2][1]))
-	print('⏪ [q] \t⏩ [w] \t⏹ [x]')
+	print('{}\n{} - {} [{}:{}]'.format('~'*50, track[0], track[1], track[2][0], track[2][1]))
+	print('next [q] \tprev [w] \texit [x]')
 	while tmp.poll() is None:
 		x = timeoutgetch()
 		if x == 'q':
