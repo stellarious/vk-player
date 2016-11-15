@@ -16,7 +16,7 @@ def wrapper(func, res):
 def get_tracks():
 	if not config.owner_id:
 		print('Add ID of user with awesome playlist in the config file')
-	query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token=41398e48456b22943fe354e99c221f8b0a3f9b63cf944ba72c9a9dbc997549816c520dc2bb54ac090d9ae'.format(config.owner_id)
+	query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token={}'.format(config.owner_id, config.token)
 	r = requests.post(query)
 	try:
 		return [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:]]
