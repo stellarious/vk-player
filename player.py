@@ -19,7 +19,7 @@ def get_tracks():
 	query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token={}'.format(config.owner_id, config.token)
 	r = requests.post(query)
 	try:
-		return [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:]]
+		return [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:] if 'url' in x]
 	except:
 		return []
 
