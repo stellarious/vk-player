@@ -8,6 +8,7 @@ import os
 from utils import timeoutgetch
 import threading
 import time
+import psutil
 
 def wrapper(func, res):
 	del res[:]
@@ -22,6 +23,9 @@ def get_tracks():
 		return [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:] if 'url' in x]
 	except:
 		return []
+
+isPaused = False
+isRepeat = False
 
 res = []
 thread = threading.Thread(target=wrapper, args=(get_tracks, res))
@@ -43,8 +47,13 @@ pointer = 0
 while True:
 	track = all_tracks[pointer]
 	tmp = subprocess.Popen(['{}ffplay'.format(config.ffmpeg_path), '-nodisp', '-autoexit', track[3]], stderr=open(os.devnull, 'wb'))
-	print('{}\n{} - {} [{}:{}]'.format('~'*50, track[0], track[1], track[2][0], track[2][1]))
-	print('next [q] \tprev [w] \texit [x]')
+	psProcess = psutil.Process(pid=tmp.pid)
+
+	print("{}\n{} - {} [{}:{}]".format('~'*20, track[0], track[1], track[2][0], track[2][1]))
+	print('prev(q)/next(w)/exit(x)/pause(p)/repeat(r)')
+	if (isRepeat):
+		print ("Repeat ON")
+	
 	while tmp.poll() is None:
 		x = timeoutgetch()
 		if x == 'q':
@@ -60,6 +69,24 @@ while True:
 			tmp.kill()
 			sys.exit()
 			break
+		elif x == 'p':
+			isPaused = not isPaused
+			if (isPaused):
+				print ("Paused")
+				psProcess.suspend()
+			else:
+				print ("Resumed")
+				psProcess.resume()
+		elif x == 'r':
+			isRepeat = not isRepeat
+			if (isRepeat):
+				print ("Repeat ON")
+			else:
+				print ("Repeat OFF")
+			
 		if x == 0: break
 
-	pointer += 1
+	if (tmp.poll () is not None and isRepeat):
+		pass
+	else:
+		pointer += 1	
