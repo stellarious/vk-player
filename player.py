@@ -26,6 +26,7 @@ def get_tracks():
 
 isPaused = False
 isRepeat = False
+song_status = ""
 
 res = []
 thread = threading.Thread(target=wrapper, args=(get_tracks, res))
@@ -60,10 +61,12 @@ while True:
 			tmp.kill()
 			if pointer < 1: pointer = 1
 			pointer -= 2
+			isPaused = False
 			break
 		elif x == 'w':
 			tmp.kill()
 			if pointer > len(all_tracks) - 1: pointer = len(all_tracks) - 1
+			isPaused = False
 			break
 		elif x == 'x':
 			tmp.kill()
