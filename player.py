@@ -26,7 +26,6 @@ def get_tracks():
 
 isPaused = False
 isRepeat = False
-song_status = ""
 
 res = []
 thread = threading.Thread(target=wrapper, args=(get_tracks, res))
