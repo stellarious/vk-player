@@ -17,6 +17,12 @@ def wrapper(func, res):
 def get_tracks():
 	if not config.owner_id:
 		print('Add ID of user with awesome playlist in the config file')
+
+	if not config.owner_id.isdigit ():
+		query = 'https://api.vk.com/method/users.get?user_ids={}'.format(config.owner_id)
+		r = requests.post(query)
+		config.owner_id = r.json ()['response'] [0] ['uid']
+
 	query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token={}'.format(config.owner_id, config.token)
 	r = requests.post(query)
 	try:
@@ -46,7 +52,7 @@ if not all_tracks:
 pointer = 0
 while True:
 	track = all_tracks[pointer]
-	tmp = subprocess.Popen(['{}ffplay'.format(config.ffmpeg_path), '-nodisp', '-autoexit', track[3]], stderr=open(os.devnull, 'wb'))
+	tmp = subprocess.Popen(['{}ffplay'.format(config.ffmpeg_path), '-nodisp', '-autoexit', track[3]], stderr=open(os.devnull, 'wb'))	
 	psProcess = psutil.Process(pid=tmp.pid)
 
 	print("{}\n{} - {} [{}:{}]".format('~'*20, track[0], track[1], track[2][0], track[2][1]))
@@ -54,8 +60,11 @@ while True:
 	if (isRepeat):
 		print ("Repeat ON")
 	
-	while tmp.poll() is None:
+	while tmp.poll() is None:		
 		x = timeoutgetch()
+		if x is None:
+			continue
+
 		if x == 'q':
 			tmp.kill()
 			if pointer < 1: pointer = 1
@@ -84,9 +93,7 @@ while True:
 			if (isRepeat):
 				print ("Repeat ON")
 			else:
-				print ("Repeat OFF")
-			
-		if x == 0: break
+				print ("Repeat OFF")			
 
 	if (tmp.poll () is not None and isRepeat):
 		pass
