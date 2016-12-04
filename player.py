@@ -26,9 +26,15 @@ def get_tracks():
 	query = 'https://api.vk.com/method/audio.get?owner_id={}&access_token={}'.format(config.owner_id, config.token)
 	r = requests.post(query)
 	try:
-		return [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0]] for x in r.json()['response'][1:] if 'url' in x]
+		return [[x['artist'], x['title'], divmod(x['duration'], 60), x['url'].split('?')[0], x ['aid']] for x in r.json()['response'][1:] if 'url' in x]
 	except:
 		return []
+
+def add_track(audioID):
+	query_add = 'https://api.vk.com/method/audio.add?audio_id={}&owner_id={}&access_token={}'.format (audioID, config.owner_id, config.token)
+	r = requests.post(query_add)
+	return r.json () ['response']
+
 
 isPaused = False
 isRepeat = False
@@ -55,8 +61,8 @@ while True:
 	tmp = subprocess.Popen(['{}ffplay'.format(config.ffmpeg_path), '-nodisp', '-autoexit', track[3]], stderr=open(os.devnull, 'wb'))	
 	psProcess = psutil.Process(pid=tmp.pid)
 
-	print("{}\n{} - {} [{}:{}]".format('~'*20, track[0], track[1], track[2][0], track[2][1]))
-	print('prev(q)/next(w)/exit(x)/pause(p)/repeat(r)')
+	print("{}\n{} - {} [{}:{}]".format('~'*20, track[0], track[1], track[2][0], track[2][1]))	
+	print('prev(q)/next(w)/exit(x)/pause(p)/repeat(r)/add track(a)')
 	if (isRepeat):
 		print ("Repeat ON")
 	
@@ -93,7 +99,10 @@ while True:
 			if (isRepeat):
 				print ("Repeat ON")
 			else:
-				print ("Repeat OFF")			
+				print ("Repeat OFF")
+		elif x == 'a':
+			ret = add_track (track [4])
+			print ("Track added. The id is: {}".format (ret))
 
 	if (tmp.poll () is not None and isRepeat):
 		pass
