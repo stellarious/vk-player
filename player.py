@@ -5,7 +5,7 @@ import subprocess
 import config
 import sys
 import os
-from utils import timeoutgetch
+from utils import timeoutgetch, getch
 import threading
 import time
 import psutil
@@ -38,11 +38,11 @@ def add_track(audio_id):
 	r = requests.post(query_add)
 	return r.json()['response']
 
-print('Choose the playlist:')
+print('Choose wisely:')
 [print('{}. {}'.format(num + 1, x)) for num, x in enumerate(config.owner_id)]
 
 try:
-	playlist_num = int(input('Enter playlist: ')) - 1
+	playlist_num = int(getch()) - 1
 	config.owner_id = config.owner_id[playlist_num]
 except:
 	print('Error: bad input')
@@ -61,7 +61,7 @@ while thread.isAlive():
 all_tracks = res[0]
 
 if not all_tracks:
-	print('Error: cannot get playlist of user {}'.format(config.owner_id))
+	print('Error: cannot get playlist of the user {}'.format(config.owner_id))
 	sys.exit(-1)
 
 AUTHOR = 0
